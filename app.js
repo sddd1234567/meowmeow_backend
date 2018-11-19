@@ -56,11 +56,15 @@ app.get('/donate', function (req, res) {
     }
     orderInfo.CheckMacValue = res.send(CheckMacValue(orderInfo));
     CreateNewOrder(orderInfo);
-    admin.database().ref('donate-request/' + tradeNo).update(orderInfo, function (snapshop) {
-
-        admin.database().ref('donate/' + tradeNo).on('value', function(snapshot){
-            res.send(readeNo);
-        });
+    admin.database().ref('donate-request/' + tradeNo).update(orderInfo, function (error) {
+        if (error) {
+            console.log(error);
+        }
+        else {
+            admin.database().ref('donate/' + tradeNo).on('value', function (snapshot) {
+                res.send(tradeNo);
+            });
+        }
     });
 })
 
@@ -69,7 +73,12 @@ app.post('/finishPay', function(req,res){
 });
 
 app.post('/finishCreatOrder', function (req, res) {
-
+    admin.database() / ref('donate/' + req.body.MerchantTradeNo).update(req.body,function(error){
+        if(error)
+            console.log(error);
+        else
+            console.log('create order success');
+    })
 })
 
 function CheckMacValue(orderInfo){
