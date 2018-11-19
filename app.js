@@ -54,7 +54,7 @@ app.get('/donate', function (req, res) {
         TotalAmount: 50,
         TradeDesc: "捐款給中途之家"
     }
-    orderInfo.CheckMacValue = res.send(CheckMacValue(orderInfo));
+    orderInfo.CheckMacValue = CheckMacValue(orderInfo);
     CreateNewOrder(orderInfo);
     admin.database().ref('donate-request/' + tradeNo).update(orderInfo, function (error) {
         if (error) {
@@ -62,7 +62,9 @@ app.get('/donate', function (req, res) {
         }
         else {
             admin.database().ref('donate/' + tradeNo).on('value', function (snapshot) {
+                if(snapshot.val() != null)
                 res.send(tradeNo);
+                // res.send(tradeNo);
             });
         }
     });
@@ -73,7 +75,7 @@ app.post('/finishPay', function(req,res){
 });
 
 app.post('/finishCreatOrder', function (req, res) {
-    admin.database() / ref('donate/' + req.body.MerchantTradeNo).update(req.body,function(error){
+    admin.database().ref('donate/' + req.body.MerchantTradeNo).update(req.body,function(error){
         if(error)
             console.log(error);
         else
