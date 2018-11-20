@@ -12,27 +12,20 @@ var crypto = require('crypto');
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xhr = new XMLHttpRequest();
 var ecpay_payment = require('ECPAY_Payment_node_js');
-var cors = require('cors')({ orgin: true });
 //增加靜態檔案的路徑
 app.use(express.static('public'))
 
 var admin = require("firebase-admin");
 
-var serviceAccount = {
-    "type": "service_account",
-    "project_id": "meowmeow-31087",
-    "private_key_id": "674265ee682cdc844385eef0195dd8be0a73cb08",
-    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCkBmx/Ve4YDfdS\nN+TCi8xlnm7R1Z8cLODhub7B/5Qz0Vvj5v9tznIBs7u/Ouo7uuv9VjBGaVrONAPf\nMymhCi9Cla4z/a5X2ayiUHOJNe1ZzLc0C/ssYFCAZlvzYQdgmZPKuD2XK+sw6x39\ndkG7M09KleRC5pR/FB82U+oTtlRaAlg8Kgjy/KqBAWAopJ9mL2/3M+4VtbjIvT1Q\ny+UFrDkmFPto6s4EEfxcRL5sgNliadzXtutUVwPGCAioHk9civNsfALgOjULbS3g\nE2X8GjbdDyUUnrwAkk073OujI7T1nR6iXclAB+wM1+Te3C/8Fw3B8aW54vpjo0gO\nUAGCW5+/AgMBAAECggEAFn4yWw89HHuvJU1jPPyFIJBRO8w9dVSALY7WZm3LydlV\nbmjV2/MvYNAKwzFrP+/6VF4r4OlUrv9PYp3Lq85Pkc7LOfej9LR11I0PcvWmtqWj\nSpYJW9oEtWmUBXQ9BJW66ytIeEETumcbpeTqzvw9IjTGPcMMrRU6Jy3rD8if7kxj\neY3vCe/CgG/QtdJyE6rs20A//GXrKQ9SfGLTGJhZbmttrJ9NjW/RCOoBjTcpXSU3\njszST2vFh0p/kWHpRnUyJt+TBK4LViGYwY2lVBK6Zdqld49e6PimUy+4snPEcfAo\nwkTshfmavxNmN4ItI/5Jt0hEXOH+LJFHCD/vdIK5AQKBgQDPatoHxEpoYWnmopLs\nXHSMIP90Pd/FBOcS/42Wn04Y09afxXwAjmE1fj4BnFWhwhE05MtDoKfaxXkj0vAk\nW9ZD5RlYcwXDfmtjbSD3NRaH+ej9zlMJwpnNIteNbXEU+wXsHIzwA/Mc0wrjwVBQ\n9mdAWL3EPMp/nWAuANfozPYmvwKBgQDKca+fHxx54c7dTY9RDj/meeCK70bk0NEX\n+f6Jx35pz0+tz8Z0pCdFT4dUYDigcofRGFgF+wSaQJPdIYQi2uIaGo55XjmEp4/N\nMsNx+wC1EPOmVfjKlRJSucejsujb0L0D4WZKt6GwtpDjRnL/3Ys3hAuqTw7x6Vj8\nJbOLM3nHAQKBgQCBHwWH3Dxt6maguwg3t/6d1VTxqisJXVn0S756y8U0U3vCjo/5\nUKlXQbWcDxSH1GYdxWh8OyEDYfddw8zW9YzXS2GR3Fj0MFjt1lu1SQkzsPHIPo8W\n/lv8hfomAsFozDQNnmBmci7//KlEy20SWbJBLn1EEowFEZV0TfYa6K07xQKBgCnE\n/yljr+pt7tK2eAWPXRvetbe02vnHI/1AdYZUBP8r6RLBtf7HB9tDJ3b/S2+/ccpw\nrWi+fBqfjGKp0aunYdNk+1SLXm7Ca+c4vB6+XUz+rGb7ghO6YkdzUX+zIFyKWxV7\n4jE0ZkYhxQ8/r+ae/WR8+DMxkLHVJakQ1lS4UD4BAoGAVT4g/mJpIW7FlGPi3CsL\nIB0nUCmXKNTTtt0RjpWOruWOkveZlvMNx03vzrMu4WmNR68X3+jRxma7Y2IIrUbu\nsI/p9+I1ke1Sz6c28qa/UAKb2dErhaHWSUKVrL9E7SppBGgB763Fdfb6MN+ImaCb\n7UlyueK5LLCYewOUvf0avqg=\n-----END PRIVATE KEY-----\n",
-    "client_email": "firebase-adminsdk-mn4xy@meowmeow-31087.iam.gserviceaccount.com",
-    "client_id": "100923519297914007631",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-mn4xy%40meowmeow-31087.iam.gserviceaccount.com"
-};
+var serviceAccount = require("./meowmeow-31087-firebase-adminsdk-mn4xy-674265ee68.json");
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    // credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert({
+        projectId: "meowmeow-31087",
+        clientEmail: "firebase-adminsdk-mn4xy@meowmeow-31087.iam.gserviceaccount.com",
+        privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCkBmx/Ve4YDfdS\nN+TCi8xlnm7R1Z8cLODhub7B/5Qz0Vvj5v9tznIBs7u/Ouo7uuv9VjBGaVrONAPf\nMymhCi9Cla4z/a5X2ayiUHOJNe1ZzLc0C/ssYFCAZlvzYQdgmZPKuD2XK+sw6x39\ndkG7M09KleRC5pR/FB82U+oTtlRaAlg8Kgjy/KqBAWAopJ9mL2/3M+4VtbjIvT1Q\ny+UFrDkmFPto6s4EEfxcRL5sgNliadzXtutUVwPGCAioHk9civNsfALgOjULbS3g\nE2X8GjbdDyUUnrwAkk073OujI7T1nR6iXclAB+wM1+Te3C/8Fw3B8aW54vpjo0gO\nUAGCW5+/AgMBAAECggEAFn4yWw89HHuvJU1jPPyFIJBRO8w9dVSALY7WZm3LydlV\nbmjV2/MvYNAKwzFrP+/6VF4r4OlUrv9PYp3Lq85Pkc7LOfej9LR11I0PcvWmtqWj\nSpYJW9oEtWmUBXQ9BJW66ytIeEETumcbpeTqzvw9IjTGPcMMrRU6Jy3rD8if7kxj\neY3vCe/CgG/QtdJyE6rs20A//GXrKQ9SfGLTGJhZbmttrJ9NjW/RCOoBjTcpXSU3\njszST2vFh0p/kWHpRnUyJt+TBK4LViGYwY2lVBK6Zdqld49e6PimUy+4snPEcfAo\nwkTshfmavxNmN4ItI/5Jt0hEXOH+LJFHCD/vdIK5AQKBgQDPatoHxEpoYWnmopLs\nXHSMIP90Pd/FBOcS/42Wn04Y09afxXwAjmE1fj4BnFWhwhE05MtDoKfaxXkj0vAk\nW9ZD5RlYcwXDfmtjbSD3NRaH+ej9zlMJwpnNIteNbXEU+wXsHIzwA/Mc0wrjwVBQ\n9mdAWL3EPMp/nWAuANfozPYmvwKBgQDKca+fHxx54c7dTY9RDj/meeCK70bk0NEX\n+f6Jx35pz0+tz8Z0pCdFT4dUYDigcofRGFgF+wSaQJPdIYQi2uIaGo55XjmEp4/N\nMsNx+wC1EPOmVfjKlRJSucejsujb0L0D4WZKt6GwtpDjRnL/3Ys3hAuqTw7x6Vj8\nJbOLM3nHAQKBgQCBHwWH3Dxt6maguwg3t/6d1VTxqisJXVn0S756y8U0U3vCjo/5\nUKlXQbWcDxSH1GYdxWh8OyEDYfddw8zW9YzXS2GR3Fj0MFjt1lu1SQkzsPHIPo8W\n/lv8hfomAsFozDQNnmBmci7//KlEy20SWbJBLn1EEowFEZV0TfYa6K07xQKBgCnE\n/yljr+pt7tK2eAWPXRvetbe02vnHI/1AdYZUBP8r6RLBtf7HB9tDJ3b/S2+/ccpw\nrWi+fBqfjGKp0aunYdNk+1SLXm7Ca+c4vB6+XUz+rGb7ghO6YkdzUX+zIFyKWxV7\n4jE0ZkYhxQ8/r+ae/WR8+DMxkLHVJakQ1lS4UD4BAoGAVT4g/mJpIW7FlGPi3CsL\nIB0nUCmXKNTTtt0RjpWOruWOkveZlvMNx03vzrMu4WmNR68X3+jRxma7Y2IIrUbu\nsI/p9+I1ke1Sz6c28qa/UAKb2dErhaHWSUKVrL9E7SppBGgB763Fdfb6MN+ImaCb\n7UlyueK5LLCYewOUvf0avqg=\n-----END PRIVATE KEY-----\n"
+    }),
     databaseURL: "https://meowmeow-31087.firebaseio.com"
 });
 
@@ -70,66 +63,64 @@ app.get('/donate', function (req, res) {
     //         // res.send(body);
     //         res.send(body);
     //     })
-    cors(req, res, function () {
-        var tradeNo = CreateTradeNo();
-        var orderDate = GetDateStr();
-        var orderInfo = {
-            ChooseSubPayment: "IBON",
-            ClientBackURL: '/',
-            ItemName: "中途之家捐款",
-            MerchantTradeDate: orderDate,
-            MerchantTradeNo: tradeNo,
-            PaymentType: "aio",
-            ReturnURL: "http://140.127.220.111/finishPay",
-            TotalAmount: 50,
-            TradeDesc: "捐款給中途之家"
-        }
-        let base_param = {
-            ChooseSubPayment: "IBON",
-            MerchantTradeNo: tradeNo, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
-            MerchantTradeDate: orderDate, //ex: 2017/02/13 15:45:30
-            TotalAmount: '50',
-            TradeDesc: '捐款給中途之家',
-            ItemName: '中途之家捐款',
-            ReturnURL: 'http://140.127.220.111/finishPay',
-            // ChooseSubPayment: '',
-            // OrderResultURL: 'http://192.168.0.1/payment_result',
-            // NeedExtraPaidInfo: '1',
-            // ClientBackURL: 'https://www.google.com',
-            // ItemURL: 'http://item.test.tw',
-            // Remark: '交易備註',
-            // StoreID: '',
-            // CustomField1: '',
-            // CustomField2: '',
-            // CustomField3: '',
-            // CustomField4: ''
-        };
-        let cvs_params = {
-            StoreExpireDate: '7',
-            Desc_1: '超商螢幕描述A',
-            Desc_2: '超商螢幕描述B',
-            Desc_3: '超商螢幕描述C',
-            Desc_4: '超商螢幕描述D',
-            PaymentInfoURL: 'http://140.127.220.111/finishCreateOrder'
-        };
-        let client_redirect = '';
-        let create = new ecpay_payment();
-        let htm = create.payment_client.aio_check_out_cvs(cvs_info = cvs_params, parameters = base_param, invoice = inv_params, client_redirect_url = client_redirect);
-        res.send(htm);
-        console.log(htm);
+    var tradeNo = CreateTradeNo();
+    var orderDate = GetDateStr();
+    var orderInfo = {
+        ChooseSubPayment: "IBON",
+        ClientBackURL: '/',
+        ItemName: "中途之家捐款",
+        MerchantTradeDate: orderDate,
+        MerchantTradeNo: tradeNo,
+        PaymentType: "aio",
+        ReturnURL: "http://140.127.220.111/finishPay",
+        TotalAmount: 50,
+        TradeDesc: "捐款給中途之家"
+    }
+    let base_param = {
+        ChooseSubPayment: "IBON",
+        MerchantTradeNo: tradeNo, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
+        MerchantTradeDate: orderDate, //ex: 2017/02/13 15:45:30
+        TotalAmount: '50',
+        TradeDesc: '捐款給中途之家',
+        ItemName: '中途之家捐款',
+        ReturnURL: 'http://140.127.220.111/finishPay',
+        // ChooseSubPayment: '',
+        // OrderResultURL: 'http://192.168.0.1/payment_result',
+        // NeedExtraPaidInfo: '1',
+        // ClientBackURL: 'https://www.google.com',
+        // ItemURL: 'http://item.test.tw',
+        // Remark: '交易備註',
+        // StoreID: '',
+        // CustomField1: '',
+        // CustomField2: '',
+        // CustomField3: '',
+        // CustomField4: ''
+    };
+    let cvs_params = {
+        StoreExpireDate: '7',
+        Desc_1: '超商螢幕描述A',
+        Desc_2: '超商螢幕描述B',
+        Desc_3: '超商螢幕描述C',
+        Desc_4: '超商螢幕描述D',
+        PaymentInfoURL: 'http://140.127.220.111/finishCreateOrder'
+    };
+    let client_redirect = '';
+    let create = new ecpay_payment();
+    let htm = create.payment_client.aio_check_out_cvs(cvs_info = cvs_params, parameters = base_param, invoice = inv_params, client_redirect_url = client_redirect);
+    res.send(htm);
+    console.log(htm);
 
-        admin.database().ref('donate-request/' + tradeNo).update(orderInfo, function (error) {
-            if (error) {
-                console.log(error);
-            }
-            else {
-                admin.database().ref('donate/' + tradeNo).on('value', function (snapshot) {
-                    // if(snapshot.val() != null)
-                    //     res.send(tradeNo);
-                    // res.send(tradeNo);
-                });
-            }
-        });
+    admin.database().ref('donate-request/' + tradeNo).update(orderInfo, function (error) {
+        if (error) {
+            console.log(error);
+        }
+        else {
+            admin.database().ref('donate/' + tradeNo).on('value', function (snapshot) {
+                // if(snapshot.val() != null)
+                //     res.send(tradeNo);
+                // res.send(tradeNo);
+            });
+        }
     });
 })
 
@@ -138,16 +129,14 @@ app.post('/finishPay', function(req,res){
 });
 
 app.post('/finishCreateOrder', function (req, res) {
-    cors(req, res, function () {
-        console.log(JSON.stringify(req.body));
-        res.send(JSON.stringify(req.body));
-        admin.database().ref('donate/' + req.body.MerchantTradeNo).update(req.body,function(error){
-            if(error)
-                console.log(error);
-            else
-                console.log('create order success');
-        })
-    });
+    console.log(JSON.stringify(req.body));
+    res.send(JSON.stringify(req.body));
+    admin.database().ref('donate/' + req.body.MerchantTradeNo).update(req.body, function (error) {
+        if (error)
+            console.log(error);
+        else
+            console.log('create order success');
+    })
 })
 
 function CheckMacValue(orderInfo){
