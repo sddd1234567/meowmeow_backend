@@ -7,6 +7,7 @@ app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+var request = require('request');
 var crypto = require('crypto');
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xhr = new XMLHttpRequest();
@@ -31,7 +32,7 @@ app.get('/', function (req, res) {
         name: "陳冠維",
         id: 1
     }
-    res.send(encodeOPayURI('HashKey=5294y06JbISpM5x9&ChoosePayment=CVS&ChooseSubPayment=CVS&ClientBackURL=https://developers.opay.tw/AioMock/MerchantClientBackUrl&EncryptType=1&ItemName=MacBook 30元X2#iPhone6s 40元X1&MerchantID=2000132&MerchantTradeDate=2018/11/19 17:45:28&MerchantTradeNo=DX20181119174528f85c&PaymentType=aio&ReturnURL=https://developers.opay.tw/AioMock/MerchantReturnUrl&StoreID=&TotalAmount=31&TradeDesc=建立超商代碼測試訂單&HashIV=v77hoKGq4kWxNNIS'));
+    // res.send(crypto.createHash('sha256').update('HashKey=5294y06JbISpM5x9&ChoosePayment=CVS&ChooseSubPayment=CVS&ClientBackURL=https://developers.opay.tw/AioMock/MerchantClientBackUrl&EncryptType=1&ItemName=MacBook 30元X2#iPhone6s 40元X1&MerchantID=2000132&MerchantTradeDate=2018/11/19 17:45:28&MerchantTradeNo=DX20181119174528f85c&PaymentType=aio&ReturnURL=https://developers.opay.tw/AioMock/MerchantReturnUrl&StoreID=&TotalAmount=31&TradeDesc=建立超商代碼測試訂單&HashIV=v77hoKGq4kWxNNIS', 'utf8').digest());
 })
 app.post('/', function (req, res) {
     req.session.name = req.body.name;
@@ -44,18 +45,29 @@ app.get('/donate', function (req, res) {
     var orderDate = GetDateStr();
     var orderInfo = {
         ChoosePayment: "CVS",
+        ChooseSubPayment: "IBON",
+        ClientBackURL: '/',
+        EncryptType: "1",
         ItemName: "中途之家捐款",
-        MerchantID: 2000132,
+        MerchantID: "2000132",
         MerchantTradeDate: orderDate,
         MerchantTradeNo: tradeNo,
         PaymentInfoURL: "http://140.127.220.111/finishCreateOrder",
         PaymentType: "aio",
         ReturnURL: "http://140.127.220.111/finishPay",
+        StoreID: "",
         TotalAmount: 50,
         TradeDesc: "捐款給中途之家"
     }
     orderInfo.CheckMacValue = CheckMacValue(orderInfo);
-    CreateNewOrder(orderInfo);
+    // console.log(JSON.stringify(orderInfo));
+    // res.send(orderInfo);
+    // res.send(crypto.createHash('sha256').update('hashkey%3d5294y06jbispm5x9%26choosepayment%3dcvs%26choosesubpayment%3dcvs%26clientbackurl%3dhttps%3a%2f%2fdevelopers.opay.tw%2faiomock%2fmerchantclientbackurl%26encrypttype%3d1%26itemname%3d%e4%b8%ad%e9%80%94%e4%b9%8b%e5%ae%b6%e6%8d%90%e6%ac%be%26merchantid%3d2000132%26merchanttradedate%3d2018%2f11%2f2+21%3a15%3a5%26merchanttradeno%3dtfirslpmt0rba03hirab%26paymenttype%3daio%26returnurl%3dhttp%3a%2f%2f140.127.220.111%2ffinishpay%26storeid%3d%26totalamount%3d50%26tradedesc%3d%e6%8d%90%e6%ac%be%e7%b5%a6%e4%b8%ad%e9%80%94%e4%b9%8b%e5%ae%b6%26hashiv%3dv77hokgq4kwxnnis').digest());
+    // CreateNewOrder(orderInfo);
+    request.post({ url: 'https://payment-stage.ecpay.tw/Cashier/AioCheckOut/V5', form: orderInfo }, function (err, httpResponse, body) {
+        console.log('finish');
+            res.send(body);
+        })
     admin.database().ref('donate-request/' + tradeNo).update(orderInfo, function (error) {
         if (error) {
             console.log(error);
@@ -63,7 +75,7 @@ app.get('/donate', function (req, res) {
         else {
             admin.database().ref('donate/' + tradeNo).on('value', function (snapshot) {
                 if(snapshot.val() != null)
-                res.send(tradeNo);
+                    res.send(tradeNo);
                 // res.send(tradeNo);
             });
         }
@@ -75,6 +87,7 @@ app.post('/finishPay', function(req,res){
 });
 
 app.post('/finishCreatOrder', function (req, res) {
+    console.log("catch order");
     admin.database().ref('donate/' + req.body.MerchantTradeNo).update(req.body,function(error){
         if(error)
             console.log(error);
@@ -91,16 +104,19 @@ function CheckMacValue(orderInfo){
         str += i + "=" + orderInfo[i];
         str += "&";
     }
-    str += "&HashIV=v77hoKGq4kWxNNIS";
+    str += "HashIV=v77hoKGq4kWxNNIS";
     str = encodeOPayURI(str);
     console.log(str);
+    // console.log(str);   
     str = sha256(str);
     return str;
 }
 
 function CreateNewOrder(orderInfo){
     var http = new XMLHttpRequest();
-    var url = 'https://payment-stage.opay.tw/Cashier/AioCheckOut/V5';
+    var url = 'https://payment-stage.ecpay.tw/Cashier/AioCheckOut/V5';
+    http.open('POST', url, true);
+    http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     var params = '';
     var isFirst = true;
     for(i in orderInfo)
@@ -112,18 +128,33 @@ function CreateNewOrder(orderInfo){
 
         params += i + "=" + orderInfo[i];
     }
-    http.open('POST', url, true);
+    // params = encodeURIComponent(params);
+    console.log(params);
+    http.onreadystatechange = function () {//Call a function when the state changes.
+        if (http.readyState == 4 && http.status == 200) {
+            console.log(http.responseText);
+        }
+    }
     http.send(params);
 }
 
 function GetDateStr(){
     var date = new Date();
-    var str = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDay() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    var str = date.getFullYear() + "/" + ('0' + (date.getMonth() + 1)).slice(-2) + "/" + ('0' + date.getDay()).slice(-2) + " " + ('0' + date.getHours()).slice(-2) + ":" + ('0' + date.getMinutes()).slice(-2) + ":" + ('0' + date.getSeconds()).slice(-2);
     return str;
 }
 
-function CreateTradeNo(){
-    return crypto.randomBytes(32).toString('base64').substr(0, 20);
+function CreateTradeNo() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 20; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+function makeid() {
 }
 
 function encodeOPayURI(str) {
@@ -131,6 +162,10 @@ function encodeOPayURI(str) {
     str = str.replace(/\%20/g, '+');
     str = str.toLowerCase();
     return str;
+}
+
+Number.prototype.pad = function (n) {
+    return new Array(n).join('0').slice((n || 2) * -1) + this;
 }
 
 var sha256 = function sha256(ascii) {
