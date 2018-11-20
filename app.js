@@ -122,7 +122,7 @@ app.post('/finishPay', function(req,res){
 
 });
 
-app.post('/finishCreatOrder', function (req, res) {
+app.post('/finishCreateOrder', function (req, res) {
     console.log("catch order");
     res.send('success');
     admin.database().ref('donate/' + req.body.MerchantTradeNo).update(req.body,function(error){
