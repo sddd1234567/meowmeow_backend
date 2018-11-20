@@ -12,6 +12,7 @@ var crypto = require('crypto');
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xhr = new XMLHttpRequest();
 var ecpay_payment = require('ECPAY_Payment_node_js');
+var cors = require('cors')({ orgin: true });
 //增加靜態檔案的路徑
 app.use(express.static('public'))
 
@@ -57,52 +58,7 @@ app.post('/', function (req, res) {
 })
 
 app.get('/donate', function (req, res) {
-    var tradeNo = CreateTradeNo();
-    var orderDate = GetDateStr();
-    var orderInfo = {
-        ChooseSubPayment: "IBON",
-        ClientBackURL: '/',
-        ItemName: "中途之家捐款",
-        MerchantTradeDate: orderDate,
-        MerchantTradeNo: tradeNo,
-        PaymentType: "aio",
-        ReturnURL: "http://140.127.220.111/finishPay",
-        TotalAmount: 50,
-        TradeDesc: "捐款給中途之家"
-    }
-    let base_param = {
-        ChooseSubPayment: "IBON",
-        MerchantTradeNo: tradeNo, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
-        MerchantTradeDate: orderDate, //ex: 2017/02/13 15:45:30
-        TotalAmount: '50',
-        TradeDesc: '捐款給中途之家',
-        ItemName: '中途之家捐款',
-        ReturnURL: 'http://140.127.220.111/finishPay',
-        // ChooseSubPayment: '',
-        // OrderResultURL: 'http://192.168.0.1/payment_result',
-        // NeedExtraPaidInfo: '1',
-        // ClientBackURL: 'https://www.google.com',
-        // ItemURL: 'http://item.test.tw',
-        // Remark: '交易備註',
-        // StoreID: '',
-        // CustomField1: '',
-        // CustomField2: '',
-        // CustomField3: '',
-        // CustomField4: ''
-    };
-    let cvs_params = {
-        StoreExpireDate: '7',
-        Desc_1: '超商螢幕描述A',
-        Desc_2: '超商螢幕描述B',
-        Desc_3: '超商螢幕描述C',
-        Desc_4: '超商螢幕描述D',
-        PaymentInfoURL: 'http://140.127.220.111/finishCreateOrder'
-    };
-    let client_redirect = '';
-    let create = new ecpay_payment();
-    let htm = create.payment_client.aio_check_out_cvs(cvs_info = cvs_params, parameters = base_param, invoice = inv_params, client_redirect_url = client_redirect);
-    res.send(htm);
-    console.log(htm);
+    
     // orderInfo.CheckMacValue = CheckMacValue(orderInfo);
     // console.log(JSON.stringify(orderInfo));
     // res.send(orderInfo);
@@ -114,18 +70,66 @@ app.get('/donate', function (req, res) {
     //         // res.send(body);
     //         res.send(body);
     //     })
+    cors(req, res, function () {
+        var tradeNo = CreateTradeNo();
+        var orderDate = GetDateStr();
+        var orderInfo = {
+            ChooseSubPayment: "IBON",
+            ClientBackURL: '/',
+            ItemName: "中途之家捐款",
+            MerchantTradeDate: orderDate,
+            MerchantTradeNo: tradeNo,
+            PaymentType: "aio",
+            ReturnURL: "http://140.127.220.111/finishPay",
+            TotalAmount: 50,
+            TradeDesc: "捐款給中途之家"
+        }
+        let base_param = {
+            ChooseSubPayment: "IBON",
+            MerchantTradeNo: tradeNo, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
+            MerchantTradeDate: orderDate, //ex: 2017/02/13 15:45:30
+            TotalAmount: '50',
+            TradeDesc: '捐款給中途之家',
+            ItemName: '中途之家捐款',
+            ReturnURL: 'http://140.127.220.111/finishPay',
+            // ChooseSubPayment: '',
+            // OrderResultURL: 'http://192.168.0.1/payment_result',
+            // NeedExtraPaidInfo: '1',
+            // ClientBackURL: 'https://www.google.com',
+            // ItemURL: 'http://item.test.tw',
+            // Remark: '交易備註',
+            // StoreID: '',
+            // CustomField1: '',
+            // CustomField2: '',
+            // CustomField3: '',
+            // CustomField4: ''
+        };
+        let cvs_params = {
+            StoreExpireDate: '7',
+            Desc_1: '超商螢幕描述A',
+            Desc_2: '超商螢幕描述B',
+            Desc_3: '超商螢幕描述C',
+            Desc_4: '超商螢幕描述D',
+            PaymentInfoURL: 'http://140.127.220.111/finishCreateOrder'
+        };
+        let client_redirect = '';
+        let create = new ecpay_payment();
+        let htm = create.payment_client.aio_check_out_cvs(cvs_info = cvs_params, parameters = base_param, invoice = inv_params, client_redirect_url = client_redirect);
+        res.send(htm);
+        console.log(htm);
 
-    admin.database().ref('donate-request/' + tradeNo).update(orderInfo, function (error) {
-        if (error) {
-            console.log(error);
-        }
-        else {
-            admin.database().ref('donate/' + tradeNo).on('value', function (snapshot) {
-                if(snapshot.val() != null)
-                    res.send(tradeNo);
-                // res.send(tradeNo);
-            });
-        }
+        admin.database().ref('donate-request/' + tradeNo).update(orderInfo, function (error) {
+            if (error) {
+                console.log(error);
+            }
+            else {
+                admin.database().ref('donate/' + tradeNo).on('value', function (snapshot) {
+                    // if(snapshot.val() != null)
+                    //     res.send(tradeNo);
+                    // res.send(tradeNo);
+                });
+            }
+        });
     });
 })
 
@@ -134,14 +138,16 @@ app.post('/finishPay', function(req,res){
 });
 
 app.post('/finishCreateOrder', function (req, res) {
-    console.log("catch order");
-    res.send('success');
-    admin.database().ref('donate/' + req.body.MerchantTradeNo).update(req.body,function(error){
-        if(error)
-            console.log(error);
-        else
-            console.log('create order success');
-    })
+    cors(req, res, function () {
+        console.log(JSON.stringify(req.body));
+        res.send(JSON.stringify(req.body));
+        admin.database().ref('donate/' + req.body.MerchantTradeNo).update(req.body,function(error){
+            if(error)
+                console.log(error);
+            else
+                console.log('create order success');
+        })
+    });
 })
 
 function CheckMacValue(orderInfo){
