@@ -19,16 +19,21 @@ var admin = require("firebase-admin");
 
 var serviceAccount = require("./meowmeow-31087-firebase-adminsdk-mn4xy-674265ee68.json");
 
-admin.initializeApp({
-    // credential: admin.credential.cert(serviceAccount),
-    credential: admin.credential.cert({
-        projectId: "meowmeow-31087",
-        clientEmail: "firebase-adminsdk-mn4xy@meowmeow-31087.iam.gserviceaccount.com",
-        privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCkBmx/Ve4YDfdS\nN+TCi8xlnm7R1Z8cLODhub7B/5Qz0Vvj5v9tznIBs7u/Ouo7uuv9VjBGaVrONAPf\nMymhCi9Cla4z/a5X2ayiUHOJNe1ZzLc0C/ssYFCAZlvzYQdgmZPKuD2XK+sw6x39\ndkG7M09KleRC5pR/FB82U+oTtlRaAlg8Kgjy/KqBAWAopJ9mL2/3M+4VtbjIvT1Q\ny+UFrDkmFPto6s4EEfxcRL5sgNliadzXtutUVwPGCAioHk9civNsfALgOjULbS3g\nE2X8GjbdDyUUnrwAkk073OujI7T1nR6iXclAB+wM1+Te3C/8Fw3B8aW54vpjo0gO\nUAGCW5+/AgMBAAECggEAFn4yWw89HHuvJU1jPPyFIJBRO8w9dVSALY7WZm3LydlV\nbmjV2/MvYNAKwzFrP+/6VF4r4OlUrv9PYp3Lq85Pkc7LOfej9LR11I0PcvWmtqWj\nSpYJW9oEtWmUBXQ9BJW66ytIeEETumcbpeTqzvw9IjTGPcMMrRU6Jy3rD8if7kxj\neY3vCe/CgG/QtdJyE6rs20A//GXrKQ9SfGLTGJhZbmttrJ9NjW/RCOoBjTcpXSU3\njszST2vFh0p/kWHpRnUyJt+TBK4LViGYwY2lVBK6Zdqld49e6PimUy+4snPEcfAo\nwkTshfmavxNmN4ItI/5Jt0hEXOH+LJFHCD/vdIK5AQKBgQDPatoHxEpoYWnmopLs\nXHSMIP90Pd/FBOcS/42Wn04Y09afxXwAjmE1fj4BnFWhwhE05MtDoKfaxXkj0vAk\nW9ZD5RlYcwXDfmtjbSD3NRaH+ej9zlMJwpnNIteNbXEU+wXsHIzwA/Mc0wrjwVBQ\n9mdAWL3EPMp/nWAuANfozPYmvwKBgQDKca+fHxx54c7dTY9RDj/meeCK70bk0NEX\n+f6Jx35pz0+tz8Z0pCdFT4dUYDigcofRGFgF+wSaQJPdIYQi2uIaGo55XjmEp4/N\nMsNx+wC1EPOmVfjKlRJSucejsujb0L0D4WZKt6GwtpDjRnL/3Ys3hAuqTw7x6Vj8\nJbOLM3nHAQKBgQCBHwWH3Dxt6maguwg3t/6d1VTxqisJXVn0S756y8U0U3vCjo/5\nUKlXQbWcDxSH1GYdxWh8OyEDYfddw8zW9YzXS2GR3Fj0MFjt1lu1SQkzsPHIPo8W\n/lv8hfomAsFozDQNnmBmci7//KlEy20SWbJBLn1EEowFEZV0TfYa6K07xQKBgCnE\n/yljr+pt7tK2eAWPXRvetbe02vnHI/1AdYZUBP8r6RLBtf7HB9tDJ3b/S2+/ccpw\nrWi+fBqfjGKp0aunYdNk+1SLXm7Ca+c4vB6+XUz+rGb7ghO6YkdzUX+zIFyKWxV7\n4jE0ZkYhxQ8/r+ae/WR8+DMxkLHVJakQ1lS4UD4BAoGAVT4g/mJpIW7FlGPi3CsL\nIB0nUCmXKNTTtt0RjpWOruWOkveZlvMNx03vzrMu4WmNR68X3+jRxma7Y2IIrUbu\nsI/p9+I1ke1Sz6c28qa/UAKb2dErhaHWSUKVrL9E7SppBGgB763Fdfb6MN+ImaCb\n7UlyueK5LLCYewOUvf0avqg=\n-----END PRIVATE KEY-----\n"
-    }),
-    databaseURL: "https://meowmeow-31087.firebaseio.com"
-});
-
+try{
+    admin.initializeApp({
+        // credential: admin.credential.cert(serviceAccount),
+        credential: admin.credential.cert({
+            projectId: "meowmeow-31087",
+            clientEmail: "firebase-adminsdk-mn4xy@meowmeow-31087.iam.gserviceaccount.com",
+            privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCkBmx/Ve4YDfdS\nN+TCi8xlnm7R1Z8cLODhub7B/5Qz0Vvj5v9tznIBs7u/Ouo7uuv9VjBGaVrONAPf\nMymhCi9Cla4z/a5X2ayiUHOJNe1ZzLc0C/ssYFCAZlvzYQdgmZPKuD2XK+sw6x39\ndkG7M09KleRC5pR/FB82U+oTtlRaAlg8Kgjy/KqBAWAopJ9mL2/3M+4VtbjIvT1Q\ny+UFrDkmFPto6s4EEfxcRL5sgNliadzXtutUVwPGCAioHk9civNsfALgOjULbS3g\nE2X8GjbdDyUUnrwAkk073OujI7T1nR6iXclAB+wM1+Te3C/8Fw3B8aW54vpjo0gO\nUAGCW5+/AgMBAAECggEAFn4yWw89HHuvJU1jPPyFIJBRO8w9dVSALY7WZm3LydlV\nbmjV2/MvYNAKwzFrP+/6VF4r4OlUrv9PYp3Lq85Pkc7LOfej9LR11I0PcvWmtqWj\nSpYJW9oEtWmUBXQ9BJW66ytIeEETumcbpeTqzvw9IjTGPcMMrRU6Jy3rD8if7kxj\neY3vCe/CgG/QtdJyE6rs20A//GXrKQ9SfGLTGJhZbmttrJ9NjW/RCOoBjTcpXSU3\njszST2vFh0p/kWHpRnUyJt+TBK4LViGYwY2lVBK6Zdqld49e6PimUy+4snPEcfAo\nwkTshfmavxNmN4ItI/5Jt0hEXOH+LJFHCD/vdIK5AQKBgQDPatoHxEpoYWnmopLs\nXHSMIP90Pd/FBOcS/42Wn04Y09afxXwAjmE1fj4BnFWhwhE05MtDoKfaxXkj0vAk\nW9ZD5RlYcwXDfmtjbSD3NRaH+ej9zlMJwpnNIteNbXEU+wXsHIzwA/Mc0wrjwVBQ\n9mdAWL3EPMp/nWAuANfozPYmvwKBgQDKca+fHxx54c7dTY9RDj/meeCK70bk0NEX\n+f6Jx35pz0+tz8Z0pCdFT4dUYDigcofRGFgF+wSaQJPdIYQi2uIaGo55XjmEp4/N\nMsNx+wC1EPOmVfjKlRJSucejsujb0L0D4WZKt6GwtpDjRnL/3Ys3hAuqTw7x6Vj8\nJbOLM3nHAQKBgQCBHwWH3Dxt6maguwg3t/6d1VTxqisJXVn0S756y8U0U3vCjo/5\nUKlXQbWcDxSH1GYdxWh8OyEDYfddw8zW9YzXS2GR3Fj0MFjt1lu1SQkzsPHIPo8W\n/lv8hfomAsFozDQNnmBmci7//KlEy20SWbJBLn1EEowFEZV0TfYa6K07xQKBgCnE\n/yljr+pt7tK2eAWPXRvetbe02vnHI/1AdYZUBP8r6RLBtf7HB9tDJ3b/S2+/ccpw\nrWi+fBqfjGKp0aunYdNk+1SLXm7Ca+c4vB6+XUz+rGb7ghO6YkdzUX+zIFyKWxV7\n4jE0ZkYhxQ8/r+ae/WR8+DMxkLHVJakQ1lS4UD4BAoGAVT4g/mJpIW7FlGPi3CsL\nIB0nUCmXKNTTtt0RjpWOruWOkveZlvMNx03vzrMu4WmNR68X3+jRxma7Y2IIrUbu\nsI/p9+I1ke1Sz6c28qa/UAKb2dErhaHWSUKVrL9E7SppBGgB763Fdfb6MN+ImaCb\n7UlyueK5LLCYewOUvf0avqg=\n-----END PRIVATE KEY-----\n"
+        }),
+        databaseURL: "https://meowmeow-31087.firebaseio.com"
+    });
+}
+catch(e)
+{
+    console.log(e);
+}
 
 let inv_params = {
 };
