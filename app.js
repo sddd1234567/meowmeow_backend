@@ -175,7 +175,19 @@ app.get('/donateatm', function(req,res){
 })
 
 app.post('/finishPay', function(req,res){
-
+    admin.database().ref('donates/' + req.body.CustomField1 + "/" + req.body.MerchantTradeNo + "/finishPay").set(true, function(error){
+        admin.database().ref('donates/' + req.body.CustomField1).once('value', function(snapshot){
+            var list = snapshot.val();
+            var total = 0;
+            for(i in list){
+                total += list[i].TradeAmt;
+            }
+            admin.database().ref('Fundraising/' + req.body.CustomField1 + "/now").set(total, function(error){
+                if(error)
+                    console.log(error);
+            })
+        });
+    });
 });
 
 app.post('/finishCreateOrder', function (req, res) {
@@ -183,7 +195,7 @@ app.post('/finishCreateOrder', function (req, res) {
     res.send(JSON.stringify(req.body));
     var obj = req.body;
     obj['finishPay'] = false;
-    admin.database().ref('donate/' + req.body.MerchantTradeNo).update(obj, function (error) {
+    admin.database().ref('donates/' + req.body.CustomField1 + "/" + req.body.MerchantTradeNo).update(obj, function (error) {
         if (error)
             console.log(error);
         else
