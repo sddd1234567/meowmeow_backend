@@ -175,6 +175,7 @@ app.get('/donateatm', function(req,res){
 })
 
 app.post('/finishPay', function(req,res){
+    console.log('get finish pay call');
     admin.database().ref('donates/' + req.body.CustomField1 + "/" + req.body.MerchantTradeNo + "/finishPay").set(true, function(error){
         admin.database().ref('donates/' + req.body.CustomField1).once('value', function(snapshot){
             var list = snapshot.val();
