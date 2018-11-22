@@ -223,13 +223,13 @@ app.post('/finishCreateOrder', function (req, res) {
 
 function CheckMacValue(orderInfo){
     var str = "";
-    str += "HashKey=5294y06JbISpM5x9&";
+    str += "HashKey=vLe4wElTYfUmZ9tV&";
     for(i in orderInfo)
     {
         str += i + "=" + orderInfo[i];
         str += "&";
     }
-    str += "HashIV=v77hoKGq4kWxNNIS";
+    str += "HashIV=LNytR4fw1YXZUY9d";
     str = encodeOPayURI(str);
     console.log(str);
     // console.log(str);   
