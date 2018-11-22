@@ -176,19 +176,36 @@ app.get('/donateatm', function(req,res){
 
 app.post('/finishPay', function(req,res){
     console.log('get finish pay call');
-    admin.database().ref('donates/' + req.body.CustomField1 + "/" + req.body.MerchantTradeNo + "/finishPay").set(true, function(error){
-        admin.database().ref('donates/' + req.body.CustomField1).once('value', function(snapshot){
-            var list = snapshot.val();
-            var total = 0;
-            for(i in list){
-                total += list[i].TradeAmt;
+    res.send('1|OK');
+    admin.database().ref('donates/' + req.body.MerchantTradeNo).once('value', function(snapshot){
+        var data = snapshot.val();
+        var targetFundraising = data.CustomField1;
+        var sponsor = data.CustomField2;
+
+        var updates = {};
+        updates['/donates/' + req.body.MerchantTradeNo + "/finishPay"] = true;
+        updates['/Users/' + sponsor + '/donates/' + req.body.MerchantTradeNo + "/finishPay"] = true;
+
+        admin.database().ref().update(updates, function (error) {
+            if (error) {
+                console.log(error);
             }
-            admin.database().ref('Fundraising/' + req.body.CustomField1 + "/now").set(total, function(error){
-                if(error)
-                    console.log(error);
-            })
+            else {
+                admin.database().ref('donates').orderByChild('CustomField1').equalTo(targetFundraising).once('value', function (snapshot) {
+                    var list = snapshot.val();
+                    var total = 0;
+                    for (i in list) {
+                        total += list[i].TradeAmt;
+                    }
+                    admin.database().ref('Fundraising/' + targetFundraising + "/now").set(total, function (error) {
+                        if (error)
+                            console.log(error);
+                    })
+                });
+            }
         });
-    });
+
+    })
 });
 
 app.post('/finishCreateOrder', function (req, res) {
@@ -196,7 +213,7 @@ app.post('/finishCreateOrder', function (req, res) {
     res.send(JSON.stringify(req.body));
     var obj = req.body;
     obj['finishPay'] = false;
-    admin.database().ref('donates/' + req.body.CustomField1 + "/" + req.body.MerchantTradeNo).update(obj, function (error) {
+    admin.database().ref('donates/' + req.body.MerchantTradeNo).update(obj, function (error) {
         if (error)
             console.log(error);
         else
