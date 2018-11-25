@@ -76,6 +76,7 @@ app.get('/donatecvs', function (req, res) {
 
     var tradeNo = CreateTradeNo();
     var orderDate = GetDateStr();
+    console.log(orderDate);
     let base_param = {
         ChooseSubPayment: cvs_type,
         MerchantTradeNo: tradeNo, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
