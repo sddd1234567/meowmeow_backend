@@ -13,6 +13,18 @@ var crypto = require('crypto');
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xhr = new XMLHttpRequest();
 var ecpay_payment = require('ECPAY_Payment_node_js');
+
+const jsonServer = require('json-server')
+const server = jsonServer.create()
+const router = jsonServer.router('db.json')
+const middlewares = jsonServer.defaults()
+
+server.use(middlewares)
+server.use(router)
+server.listen(process.env.PORT || 3001, () => {
+    console.log('JSON Server is running')
+})
+
 //增加靜態檔案的路徑
 app.use(express.static('public'))
 
@@ -38,6 +50,7 @@ app.get('/', function (req, res) {
         name: "陳冠維",
         id: 1
     }
+    res.render('index.ejs');
     // res.send(crypto.createHash('sha256').update('HashKey=5294y06JbISpM5x9&ChoosePayment=CVS&ChooseSubPayment=CVS&ClientBackURL=https://developers.opay.tw/AioMock/MerchantClientBackUrl&EncryptType=1&ItemName=MacBook 30元X2#iPhone6s 40元X1&MerchantID=2000132&MerchantTradeDate=2018/11/19 17:45:28&MerchantTradeNo=DX20181119174528f85c&PaymentType=aio&ReturnURL=https://developers.opay.tw/AioMock/MerchantReturnUrl&StoreID=&TotalAmount=31&TradeDesc=建立超商代碼測試訂單&HashIV=v77hoKGq4kWxNNIS', 'utf8').digest());
 })
 app.post('/', function (req, res) {
@@ -56,6 +69,7 @@ app.get('/donatecvs', function (req, res) {
     
     var targetFundraisingKey = req.query.targetFundraisingKey;
     var targetFundraisingName = req.query.targetFundraisingName;
+    var address = req.query.address;
     var totalAmount = req.query.totalAmount;
     var sponsor = req.query.sponsor;
     var cvs_type = req.query.cvs_type;
@@ -79,7 +93,7 @@ app.get('/donatecvs', function (req, res) {
         // StoreID: '',
         CustomField1: targetFundraisingKey,
         CustomField2: sponsor,
-        // CustomField3: '',
+        CustomField3: address,
         // CustomField4: ''
     };
     let cvs_params = {
@@ -113,6 +127,7 @@ app.get('/donateatm', function(req,res){
     var targetFundraisingKey = req.query.targetFundraisingKey;
     var targetFundraisingName = req.query.targetFundraisingName;
     var totalAmount = req.query.totalAmount;
+    var address = req.query.address;
     var sponsor = req.query.sponsor;
 
     var tradeNo = CreateTradeNo();
@@ -134,7 +149,7 @@ app.get('/donateatm', function(req,res){
         // StoreID: '',
         CustomField1: targetFundraisingKey,
         CustomField2: sponsor,
-        // CustomField3: '',
+        CustomField3: address,
         // CustomField4: ''
     };
 
@@ -239,7 +254,7 @@ function CheckMacValue(orderInfo){
 
 function CreateNewOrder(orderInfo){
     var http = new XMLHttpRequest();
-    var url = 'https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5';
+    var url = 'https://payment.ecpay.com.tw/Cashier/AioCheckOut/V5';
     http.open('POST', url, true);
     http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     var params = '';

@@ -1,1 +1,39 @@
-hello world
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script type="text/javascript" src="http://api.map.com.tw/js/getAPI.asp?v=1&key=56C74C11A196AC73FB0502F7ABC686F8F960A696"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+    
+</body>
+<script>
+    var hospitalData;
+     $.get('http://localhost:3000/hospital', function (data) {
+        //  console.log(data);
+         hospitalData = data;
+         for(var i = 0; i < hospitalData.length; i++)
+         {
+             SetNewData(i);
+         }
+     })
+     function SetNewData(index){        
+         getAddrXY2("" + hospitalData[index]['機構地址'] + "",setData);
+     }
+     function setData(obj) {
+            var x = obj.locate.lng; //x座標  
+            var y = obj.locate.lat; //y座標
+            if (x == 0 || y == 0) {
+                console.log("未取得座標");
+            } else {
+                alert("取得地址座標:(" + y + "," + x + ")");
+                hospitalData['lng'] = x;
+                hospitalData['lat'] = y;
+            }
+        }
+</script>
+</html>
