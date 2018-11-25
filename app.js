@@ -210,10 +210,17 @@ app.post('/finishPay', function(req,res){
                 admin.database().ref('donates').orderByChild('CustomField1').equalTo(targetFundraising).once('value', function (snapshot) {
                     var list = snapshot.val();
                     var total = 0;
+                    var count = 0;
                     for (i in list) {
                         total += list[i].TradeAmt;
+                        count++;
                     }
-                    admin.database().ref('Fundraising/' + targetFundraising + "/now").set(total, function (error) {
+
+
+                    var fundraisingUpdates = {};
+                    fundraisingUpdates['/Fundraising/' + targetFundraising + "/now"] = total;
+                    fundraisingUpdates['/Fundraising/' + targetFundraising + "/nowPeople"] = count;
+                    admin.database().ref().update(fundraisingUpdates, function (error) {
                         if (error)
                             console.log(error);
                     })
