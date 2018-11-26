@@ -244,6 +244,99 @@ app.post('/finishCreateOrder', function (req, res) {
     })
 })
 
+app.get('/testmessage', function(req,res){
+    var payload = {
+        notification: {
+            title: "有貓咪需要幫助",
+            body: "有貓咪受傷了，快去看看！",
+            // sound: "default",
+            // click_action: "FCM_PLUGIN_ACTIVITY",
+            // icon: "fcm_push_icon"
+            clickAction: "FCM_PLUGIN_ACTIVITY"  //Must be present for Android
+        },
+        data: {
+            index: "a"
+        },
+        // to: "/topics/topicExample",
+        // priority: "high",
+        // restricted_package_name: "",
+        topic: "all"
+    }
+
+    var message = {
+        android: {
+            priority: 'high',
+            notification: {
+                title: '有貓咪需要幫助',
+                body: '有貓咪受傷了，快去看看！',
+                color: '#f45342',
+                clickAction: "FCM_PLUGIN_ACTIVITY"  //Must be present for Android
+            }
+        },
+        topic: 'all'
+    };
+    SendMessageToTopic(message);
+})
+
+var isFirstInitial = true;
+var helpArticleNameCache = [];
+admin.database().ref('Help').on('value',function(snapshot){
+    var list = snapshot.val();
+    if(isFirstInitial)
+    {
+        for(i in list){
+            helpArticleNameCache.push(i);
+        }
+        isFirstInitial = false;
+    }
+    else
+    {
+        for(i in list){
+            if(!helpArticleNameCache.includes(i))
+            {
+                helpArticleNameCache.push(i);
+                console.log('new help article');
+                var district = list[i].district;
+                var payload = {
+                    notification: {
+                        title: "有貓咪需要幫助",
+                        body: district + "有貓咪受傷了，快去看看！",
+                        // sound: "default",
+                        // click_action: "FCM_PLUGIN_ACTIVITY",
+                        // icon: "fcm_push_icon"
+                    },
+                    data: {
+                        index: i
+                    },
+                    // to: "/topics/topicExample",
+                    // priority: "high",
+                    // restricted_package_name: "",
+                    topic: "all"
+                }
+                SendMessageToTopic(payload);
+            }
+        }
+    }
+})
+
+
+
+function SendMessageToTopic(payload){
+
+    // See documentation on defining a message payload.
+    var message = payload;
+
+    // Send a message to devices subscribed to the provided topic.
+    admin.messaging().send(message)
+        .then((response) => {
+            // Response is a message ID string.
+            console.log('Successfully sent message:', response);
+        })
+        .catch((error) => {
+            console.log('Error sending message:', error);
+        });
+}
+
 function CheckMacValue(orderInfo){
     var str = "";
     str += "HashKey=vLe4wElTYfUmZ9tV&";
